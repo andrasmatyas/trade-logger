@@ -16,8 +16,6 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        //const res = await fetch('http://localhost:5000/transactions')
-        //const getData = await savedData.json()
         const rawData = await getDocs(myCollection)
         const getData = rawData.docs.map((doc) => ({
           ...doc.data(),
@@ -93,12 +91,6 @@ function App() {
   }
   async function addRow(row) {
     try {
-      //const res = await fetch('http://localhost:5000/transactions', {
-      //  method: 'POST',
-      //  headers: { 'Content-Type': 'application/json' },
-      //  body: JSON.stringify(row),
-      //})
-      //const result = await res.json()
       await setDoc(doc(myDB, 'trade-logger-test', row.id), {
         type: row.type,
         amount1: row.amount1,
@@ -114,10 +106,6 @@ function App() {
   }
   async function deleteRow(delId) {
     try {
-      //const res = await fetch(`http://localhost:5000/transactions/${delId}`, {
-      //  method: 'DELETE',
-      //})
-      //const result = await res.json()
       await deleteDoc(doc(myDB, 'trade-logger-test', delId))
       setRequestCount((prevstate) => prevstate + 1)
     } catch (err) {
