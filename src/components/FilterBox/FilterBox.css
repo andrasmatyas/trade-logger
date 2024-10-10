@@ -1,0 +1,31 @@
+.filter-box {
+  border: 1px solid hsl(143, 100%, 20%);
+  margin-left: 2rem;
+  margin-bottom: 2rem;
+}
+.filter-header {
+  padding: 0.5rem;
+  background-color: white;
+  color: hsl(143, 100%, 20%);
+}
+.filter-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background-color: hsl(143, 100%, 20%);
+  color: white;
+}
+.checkbox-container {
+  display: flex;
+}
+.checkbox-container label {
+  width: 6.7rem;
+}
+.checkbox-container input {
+  margin: 0.5rem 0.5rem 0 1rem;
+  accent-color: black;
+}
+@media (max-width: 94.3rem) {
+  .filter-box {
+    margin-left: 0;
+  }
+}

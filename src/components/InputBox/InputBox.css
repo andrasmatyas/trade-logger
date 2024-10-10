@@ -1,0 +1,46 @@
+.input-box {
+  border: 1px solid hsl(143, 100%, 20%);
+  margin-left: 2rem;
+  margin-bottom: 2rem;
+}
+.transaction-tab-container {
+  display: flex;
+}
+.transaction-tab {
+  text-align: center;
+  width: 6.7rem;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+.transaction-tab:hover {
+  background-color: hsl(143, 100%, 90%);
+}
+.tab-selected {
+  background-color: hsl(143, 100%, 20%);
+  color: white;
+}
+.tab-selected:hover {
+  background-color: hsl(143, 100%, 20%);
+}
+.tab-not-sel {
+  color: hsl(143, 100%, 20%);
+  background-color: white;
+}
+.input-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background-color: hsl(143, 100%, 20%);
+  color: white;
+}
+.input-form .button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 7.05rem;
+}
+
+@media (max-width: 94.3rem) {
+  .input-box {
+    margin-left: 0;
+  }
+}
