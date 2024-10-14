@@ -7,7 +7,7 @@ import TableBox from './components/TableBox/TableBox'
 import BalanceBox from './components/BlanaceBox/BlanaceBox'
 
 function App() {
-  const myCollection = collection(myDB, 'trade-logger-test')
+  const myCollection = collection(myDB, 'trade-logger')
   const [data, setData] = useState([])
   const [balance, setBalance] = useState({})
   const [filterData, setFilterData] = useState([])
@@ -91,7 +91,7 @@ function App() {
   }
   async function addRow(row) {
     try {
-      await setDoc(doc(myDB, 'trade-logger-test', row.id), {
+      await setDoc(doc(myDB, 'trade-logger', row.id), {
         type: row.type,
         amount1: row.amount1,
         currency1: row.currency1.toString(),
@@ -106,7 +106,7 @@ function App() {
   }
   async function deleteRow(delId) {
     try {
-      await deleteDoc(doc(myDB, 'trade-logger-test', delId))
+      await deleteDoc(doc(myDB, 'trade-logger', delId))
       setRequestCount((prevstate) => prevstate + 1)
     } catch (err) {
       console.log(err)
