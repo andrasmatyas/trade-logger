@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app'
-import { getFirestore } from 'firebase/firestore'
+import { getFirestore, collection } from 'firebase/firestore'
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY,
   authDomain: process.env.REACT_APP_AUTH_DOMAIN,
@@ -10,6 +10,5 @@ const firebaseConfig = {
 }
 
 const app = initializeApp(firebaseConfig)
-const myDB = getFirestore(app)
-
-export default myDB
+export const myDB = getFirestore(app)
+export const myCollection = collection(myDB, 'trade-logger')

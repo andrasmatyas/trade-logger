@@ -1,7 +1,16 @@
+import { dataContext } from '../../context/dataContext'
+import {
+  FilteredDataContext,
+  SetFilteredDataContext,
+} from '../../context/filteredDataContext'
+import {
+  FilterOnContext,
+  SetFilterOnContext,
+} from '../../context/filterOnContext'
 import './FilterBox.css'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 
-const FilterBox = ({ balance, handleFilter }) => {
+const FilterBox = () => {
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
   const [currency1, setCurrency1] = useState('')
@@ -10,6 +19,28 @@ const FilterBox = ({ balance, handleFilter }) => {
   const [sellOn, setSellOn] = useState(true)
   const [receiveOn, setReceiveOn] = useState(true)
   const [withdrawOn, setWithdrawOn] = useState(true)
+  const data = useContext(dataContext)
+  const filteredData = useContext(FilteredDataContext)
+  const setFilteredData = useContext(SetFilteredDataContext)
+  const filterOn = useContext(FilterOnContext)
+  const setFilterOn = useContext(SetFilterOnContext)
+  const currencyOptions = getCurrencyOptions(filterOn ? filteredData : data)
+  function getCurrencyOptions(tableData) {
+    return tableData.reduce(
+      (acc, row) => {
+        const currentArray = acc
+        if (!currentArray.includes(row.currency1)) {
+          currentArray.push(row.currency1)
+        }
+        if (!currentArray.includes(row.currency2)) {
+          currentArray.push(row.currency2)
+        }
+        return currentArray
+      },
+      ['']
+    )
+  }
+
   function initFilter() {
     setDateFrom('')
     setDateTo('')
@@ -20,8 +51,46 @@ const FilterBox = ({ balance, handleFilter }) => {
     setReceiveOn(true)
     setWithdrawOn(true)
   }
-  const selectOptions0 = Object.keys(balance)
-  const selectOptions = ['', ...selectOptions0]
+  function filterBoolean(row, filterArray) {
+    let typeArray = []
+    if (filterArray[5]) {
+      typeArray.push('Buy')
+    }
+    if (filterArray[6]) {
+      typeArray.push('Sell')
+    }
+    if (filterArray[7]) {
+      typeArray.push('Receive')
+    }
+    if (filterArray[8]) {
+      typeArray.push('Withdraw')
+    }
+    let dateFromBool = filterArray[1] ? row.datetime >= filterArray[1] : true
+    let dateToBool = filterArray[2] ? row.datetime <= filterArray[2] : true
+    let currency1Bool = filterArray[3]
+      ? row.currency1 === filterArray[3] || row.currency2 === filterArray[3]
+      : true
+    let currency2Bool = filterArray[4]
+      ? row.currency1 === filterArray[4] || row.currency2 === filterArray[4]
+      : true
+    return (
+      dateFromBool &&
+      dateToBool &&
+      currency1Bool &&
+      currency2Bool &&
+      typeArray.includes(row.type)
+    )
+  }
+  function filterHandler(filterArray) {
+    if (filterArray[0]) {
+      setFilterOn(true)
+      const filData = data.filter((row) => filterBoolean(row, filterArray))
+      setFilteredData(filData)
+    } else {
+      setFilterOn(false)
+      setFilteredData([])
+    }
+  }
   return (
     <div className='filter-box'>
       <div className='filter-header'>FILTER</div>
@@ -48,7 +117,7 @@ const FilterBox = ({ balance, handleFilter }) => {
             value={currency1}
             onChange={(e) => setCurrency1(e.target.value)}
           >
-            {selectOptions.map((val, i) => (
+            {currencyOptions.map((val, i) => (
               <option key={i} value={val}>
                 {val}
               </option>
@@ -61,7 +130,7 @@ const FilterBox = ({ balance, handleFilter }) => {
             value={currency2}
             onChange={(e) => setCurrency2(e.target.value)}
           >
-            {selectOptions.map((val, i) => (
+            {currencyOptions.map((val, i) => (
               <option key={i} value={val}>
                 {val}
               </option>
@@ -108,7 +177,7 @@ const FilterBox = ({ balance, handleFilter }) => {
           <button
             onClick={() => {
               initFilter()
-              handleFilter([false, '', '', '', '', true, true, true, true])
+              filterHandler([false, '', '', '', '', true, true, true, true])
             }}
           >
             Reset
@@ -124,7 +193,7 @@ const FilterBox = ({ balance, handleFilter }) => {
                 currency2 ||
                 !(buyOn && sellOn && receiveOn && withdrawOn)
               ) {
-                handleFilter([
+                filterHandler([
                   true,
                   dateFrom,
                   dateTo,

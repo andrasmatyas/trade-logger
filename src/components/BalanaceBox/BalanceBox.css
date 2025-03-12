@@ -1,0 +1,14 @@
+.balance-box {
+  border: 1px solid hsl(143, 100%, 20%);
+  margin: 2rem;
+}
+.balance-header {
+  background-color: hsl(143, 100%, 20%);
+  color: white;
+  padding: 0.5rem;
+}
+.balance-body {
+  display: flex;
+  justify-content: space-evenly;
+  padding: 1px;
+}

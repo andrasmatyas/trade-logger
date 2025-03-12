@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
+import { dataActionsContext } from '../../context/dataContext'
+import { FilterOnContext } from '../../context/filterOnContext'
 import './InputBox.css'
 
-const InputBox = ({ filterOn, handleAdd }) => {
+const InputBox = () => {
   const [transactionType, setTransactionType] = useState('Buy')
   const [amount1, setAmount1] = useState('')
   const [currency1, setCurrency1] = useState('')
@@ -9,9 +11,8 @@ const InputBox = ({ filterOn, handleAdd }) => {
   const [currency2, setCurrency2] = useState('')
   const [dateTime, setDateTime] = useState('')
   const [fieldCheck, setFieldCheck] = useState([true, true, true, true, true])
-  useEffect(() => {
-    initInput()
-  }, [transactionType])
+  const { addRow } = useContext(dataActionsContext)
+  const filterOn = useContext(FilterOnContext)
   const tabLabels = ['Buy', 'Sell', 'Receive', 'Withdraw']
   const inputFieldDanger = (index) => {
     return `input-field  ${fieldCheck[index] ? '' : 'input-field-danger'}`
@@ -98,10 +99,13 @@ const InputBox = ({ filterOn, handleAdd }) => {
       checkArray[3] &&
       checkArray[4]
     ) {
-      handleAdd(generateRow())
+      addRow(generateRow())
       initInput()
     }
   }
+  useEffect(() => {
+    initInput()
+  }, [transactionType])
   return (
     <div className='input-box'>
       <div className='transaction-tab-container'>

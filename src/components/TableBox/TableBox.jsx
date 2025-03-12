@@ -1,18 +1,40 @@
+import { useState, useContext } from 'react'
+import { dataContext, dataActionsContext } from '../../context/dataContext'
+import {
+  FilteredDataContext,
+  SetFilteredDataContext,
+} from '../../context/filteredDataContext'
+import { FilterOnContext } from '../../context/filterOnContext'
+import TableRow from '../TableRow/TableRow'
 import './TableBox.css'
-import { RiDeleteBack2Fill } from 'react-icons/ri'
-import { useState } from 'react'
 
-const DataTable = ({ data, handleDelete }) => {
+const DataTable = () => {
   const [selectOn, setSelectOn] = useState(false)
-  const [selectId, setSelectId] = useState(0)
-  function getPrice(row) {
-    switch (row.type) {
-      case 'Buy':
-        return `${(row.amount2 / row.amount1).toFixed(2)} ${row.currency2}`
-      case 'Sell':
-        return `${(row.amount1 / row.amount2).toFixed(2)} ${row.currency1}`
-      default:
-        return ''
+  const [selectedId, setSelectedId] = useState(0)
+  const data = useContext(dataContext)
+  const { deleteRow } = useContext(dataActionsContext)
+  const filteredData = useContext(FilteredDataContext)
+  const setFilteredData = useContext(SetFilteredDataContext)
+  const filterOn = useContext(FilterOnContext)
+  const renderData = filterOn ? filteredData : data
+  const headerTexts = [
+    'Transaction',
+    'Received Amount',
+    'Received Currency',
+    'Sent Amount',
+    'Sent Currency',
+    'Price',
+    'Date & Time',
+  ]
+  function clickHandler(id) {
+    setSelectOn((prevState) => !prevState)
+    setSelectedId(id)
+  }
+  function deleteHandler() {
+    deleteRow(selectedId)
+    if (filterOn) {
+      const delFilData = filteredData.filter((row) => row.id !== selectedId)
+      setFilteredData(delFilData)
     }
   }
   return (
@@ -20,45 +42,20 @@ const DataTable = ({ data, handleDelete }) => {
       <table>
         <thead>
           <tr className='data-header'>
-            <th>Type</th>
-            <th>Received Amount</th>
-            <th>Received Currency</th>
-            <th>Sent Amount</th>
-            <th>Sent Currency</th>
-            <th>Price</th>
-            <th>Date & Time</th>
+            {headerTexts.map((text) => (
+              <th>{text}</th>
+            ))}
           </tr>
         </thead>
         <tbody>
-          {data.map((row) => (
-            <tr
+          {renderData.map((row) => (
+            <TableRow
               key={row.id}
-              className={`data-row ${
-                selectOn === true && selectId === row.id ? 'selected-row' : ''
-              }`}
-              onClick={() => {
-                setSelectOn((prevState) => !prevState)
-                setSelectId(row.id)
-              }}
-            >
-              <td>{row.type}</td>
-              <td>
-                {row.amount1 === 0 && row.currency1 === '' ? '' : row.amount1}
-              </td>
-              <td>{row.currency1}</td>
-              <td>
-                {row.amount2 === 0 && row.currency2 === '' ? '' : row.amount2}
-              </td>
-              <td>{row.currency2}</td>
-              <td>{getPrice(row)}</td>
-              <td>{row.datetime.replace('T', ' ')}</td>
-              {selectOn === true && selectId === row.id && (
-                <RiDeleteBack2Fill
-                  className='delete-icon delete-left'
-                  onClick={() => handleDelete(row.id)}
-                />
-              )}
-            </tr>
+              row={row}
+              isSelected={selectedId === row.id && selectOn === true}
+              clickHandler={clickHandler}
+              deleteHandler={deleteHandler}
+            />
           ))}
         </tbody>
       </table>
