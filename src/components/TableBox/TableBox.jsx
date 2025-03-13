@@ -43,7 +43,7 @@ const DataTable = () => {
         <thead>
           <tr className='data-header'>
             {headerTexts.map((text) => (
-              <th>{text}</th>
+              <th key={text}>{text}</th>
             ))}
           </tr>
         </thead>

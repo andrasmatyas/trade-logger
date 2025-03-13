@@ -12,36 +12,11 @@ main {
   display: flex;
   flex-direction: column;
 }
-.input-field {
-  display: flex;
-  flex-direction: column;
-  margin: 0.5rem 1rem;
-}
-.input-field label {
-  padding: 0.5rem 0.5rem 0.5rem 0;
-}
-.input-field input,
-.input-field select {
-  padding: 0.5rem;
-}
-.input-field input:focus {
-  outline: none;
-}
-.input-field-blank {
-  min-height: 5.4rem;
-}
-.input-field-danger input {
-  border: 2px solid #ef4444;
-}
-.input-field-danger span {
-  color: #ef4444;
-  font-weight: bold;
-}
 .button-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 5.4rem;
+  min-height: 5.35rem;
 }
 .button-container button {
   padding: 0.7rem 0;
