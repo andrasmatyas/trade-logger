@@ -32,11 +32,12 @@
   background-color: hsl(143, 100%, 20%);
   color: white;
 }
-.input-form .button-container {
+.input-button-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 7.05rem;
+  height: 5.5rem;
+  padding-bottom: 1.3rem;
 }
 
 @media (max-width: 94.3rem) {

@@ -12,11 +12,11 @@ function App() {
       <DataContextProvider>
         <FilteredDataContextProvider>
           <FilterOnContextProvider>
-            <header className='App-header'>
+            <header>
               <BalanceBox />
             </header>
             <main>
-              <div className='input-container'>
+              <div className='action-box-container'>
                 <InputBox />
                 <FilterBox />
               </div>

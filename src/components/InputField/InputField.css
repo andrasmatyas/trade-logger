@@ -1,25 +1,24 @@
-.input-field {
+.input-field-container {
   display: flex;
   flex-direction: column;
   margin: 0.5rem 1rem;
 }
-.input-field label {
+.input-field-label {
   padding: 0.5rem 0.5rem 0.5rem 0;
 }
-.input-field input,
-.input-field select {
+.input-field {
   padding: 0.5rem;
 }
-.input-field input:focus {
+.input-field:focus {
   outline: none;
 }
 .input-field-blank {
-  min-height: 5.3rem;
+  height: 4.3rem;
 }
-.input-field-danger input {
+.input-field-danger {
   border: 2px solid #ef4444;
 }
-.input-field-danger span {
+.input-span-danger {
   color: #ef4444;
   font-weight: bold;
 }

@@ -1,3 +1,5 @@
+import { useContext } from 'react'
+import useObjReducer from '../../hooks/useObjReducer'
 import { dataContext } from '../../context/dataContext'
 import {
   FilteredDataContext,
@@ -7,24 +9,34 @@ import {
   FilterOnContext,
   SetFilterOnContext,
 } from '../../context/filterOnContext'
+import filterObject from '../../assets/filterObject'
+import InputField from '../InputField/InputField'
+import SelectField from '../SelectField/SelectField'
+import CheckBox from '../CheckBox/CheckBox'
 import './FilterBox.css'
-import { useContext, useState } from 'react'
 
 const FilterBox = () => {
-  const [dateFrom, setDateFrom] = useState('')
-  const [dateTo, setDateTo] = useState('')
-  const [currency1, setCurrency1] = useState('')
-  const [currency2, setCurrency2] = useState('')
-  const [buyOn, setBuyOn] = useState(true)
-  const [sellOn, setSellOn] = useState(true)
-  const [receiveOn, setReceiveOn] = useState(true)
-  const [withdrawOn, setWithdrawOn] = useState(true)
+  const { objState: filterState, objDispatch: filterDispatch } = useObjReducer({
+    dateFrom: '',
+    dateUntil: '',
+    currency1: '',
+    currency2: '',
+    buyOn: true,
+    sellOn: true,
+    receiveOn: true,
+    withdrawOn: true,
+  })
   const data = useContext(dataContext)
   const filteredData = useContext(FilteredDataContext)
   const setFilteredData = useContext(SetFilteredDataContext)
   const filterOn = useContext(FilterOnContext)
   const setFilterOn = useContext(SetFilterOnContext)
-  const currencyOptions = getCurrencyOptions(filterOn ? filteredData : data)
+  const currency1Options = getCurrencyOptions(filterOn ? filteredData : data)
+  const currency2Options = filterState[filterObject.select[0].selectKey]
+    ? currency1Options.filter(
+        (val) => val !== filterState[filterObject.select[0].selectKey]
+      )
+    : currency1Options
   function getCurrencyOptions(tableData) {
     return tableData.reduce(
       (acc, row) => {
@@ -40,173 +52,123 @@ const FilterBox = () => {
       ['']
     )
   }
-
-  function initFilter() {
-    setDateFrom('')
-    setDateTo('')
-    setCurrency1('')
-    setCurrency2('')
-    setBuyOn(true)
-    setSellOn(true)
-    setReceiveOn(true)
-    setWithdrawOn(true)
-  }
-  function filterBoolean(row, filterArray) {
+  function filterBoolean(row) {
     let typeArray = []
-    if (filterArray[5]) {
+    if (filterState.buyOn) {
       typeArray.push('Buy')
     }
-    if (filterArray[6]) {
+    if (filterState.sellOn) {
       typeArray.push('Sell')
     }
-    if (filterArray[7]) {
+    if (filterState.receiveOn) {
       typeArray.push('Receive')
     }
-    if (filterArray[8]) {
+    if (filterState.withdrawOn) {
       typeArray.push('Withdraw')
     }
-    let dateFromBool = filterArray[1] ? row.datetime >= filterArray[1] : true
-    let dateToBool = filterArray[2] ? row.datetime <= filterArray[2] : true
-    let currency1Bool = filterArray[3]
-      ? row.currency1 === filterArray[3] || row.currency2 === filterArray[3]
+    let dateFromBool = filterState.dateFrom
+      ? row.datetime >= filterState.dateFrom
       : true
-    let currency2Bool = filterArray[4]
-      ? row.currency1 === filterArray[4] || row.currency2 === filterArray[4]
+    let dateUntilBool = filterState.dateUntil
+      ? row.datetime <= filterState.dateUntil
       : true
+    let currencyBool = true
+    if (filterState.currency1 && filterState.currency2) {
+      currencyBool =
+        (row.currency1 === filterState.currency1 &&
+          row.currency2 === filterState.currency2) ||
+        (row.currency1 === filterState.currency2 &&
+          row.currency2 === filterState.currency1)
+    } else if (filterState.currency1) {
+      currencyBool =
+        row.currency1 === filterState.currency1 ||
+        row.currency2 === filterState.currency1
+    } else if (filterState.currency2) {
+      currencyBool =
+        row.currency1 === filterState.currency2 ||
+        row.currency2 === filterState.currency2
+    }
     return (
       dateFromBool &&
-      dateToBool &&
-      currency1Bool &&
-      currency2Bool &&
+      dateUntilBool &&
+      currencyBool &&
       typeArray.includes(row.type)
     )
   }
-  function filterHandler(filterArray) {
-    if (filterArray[0]) {
-      setFilterOn(true)
-      const filData = data.filter((row) => filterBoolean(row, filterArray))
-      setFilteredData(filData)
-    } else {
-      setFilterOn(false)
-      setFilteredData([])
+  function filterHandler() {
+    if (
+      filterState.dateFrom === '' &&
+      filterState.dateUntil === '' &&
+      filterState.currency1 === '' &&
+      filterState.currency2 === '' &&
+      filterState.buyOn &&
+      filterState.sellOn &&
+      filterState.receiveOn &&
+      filterState.withdrawOn
+    ) {
+      return
     }
+    setFilteredData(data.filter((row) => filterBoolean(row)))
+    setFilterOn(true)
+  }
+  function resetHandler() {
+    filterDispatch({ type: 'reset' })
+    setFilterOn(false)
+    setFilteredData([])
   }
   return (
     <div className='filter-box'>
       <div className='filter-header'>FILTER</div>
       <div className='filter-form'>
-        <div className='input-field'>
-          <label>Date From:</label>
-          <input
-            value={dateFrom}
-            onChange={(e) => setDateFrom(e.target.value)}
-            type='datetime-local'
+        {filterObject.input.map((obj, i) => (
+          <InputField
+            key={`fi-${i}`}
+            label={obj.label}
+            inputType={obj.inputType}
+            inputValue={filterState[obj.inputKey]}
+            inputKey={obj.inputKey}
+            inputDispatch={filterDispatch}
           />
-        </div>
-        <div className='input-field'>
-          <label>Date To:</label>
-          <input
-            value={dateTo}
-            onChange={(e) => setDateTo(e.target.value)}
-            type='datetime-local'
+        ))}
+        {filterObject.select.map((obj, i) => (
+          <SelectField
+            key={`fs-${i}`}
+            label={obj.label}
+            selectValue={filterState[obj.selectKey]}
+            selectKey={obj.selectKey}
+            selectOptions={i === 0 ? currency1Options : currency2Options}
+            selectDispatch={filterDispatch}
           />
-        </div>
-        <div className='input-field'>
-          <label>Currency 1:</label>
-          <select
-            value={currency1}
-            onChange={(e) => setCurrency1(e.target.value)}
-          >
-            {currencyOptions.map((val, i) => (
-              <option key={i} value={val}>
-                {val}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className='input-field'>
-          <label>Currency 2:</label>
-          <select
-            value={currency2}
-            onChange={(e) => setCurrency2(e.target.value)}
-          >
-            {currencyOptions.map((val, i) => (
-              <option key={i} value={val}>
-                {val}
-              </option>
-            ))}
-          </select>
+        ))}
+        <div className='checkbox-container'>
+          {filterObject.checkbox12.map((obj, i) => (
+            <CheckBox
+              key={`cb-${i}`}
+              label={obj.label}
+              checkValue={filterState[obj.checkKey]}
+              checkKey={obj.checkKey}
+              checkDispatch={filterDispatch}
+            />
+          ))}
         </div>
         <div className='checkbox-container'>
-          <label>
-            <input
-              type='checkbox'
-              checked={buyOn}
-              onChange={() => setBuyOn((prevState) => !prevState)}
+          {filterObject.checkbox34.map((obj, i) => (
+            <CheckBox
+              key={`cb-${i + 2}`}
+              label={obj.label}
+              checkValue={filterState[obj.checkKey]}
+              checkKey={obj.checkKey}
+              checkDispatch={filterDispatch}
             />
-            Buy
-          </label>
-          <label>
-            <input
-              type='checkbox'
-              checked={sellOn}
-              onChange={() => setSellOn((prevState) => !prevState)}
-            />
-            Sell
-          </label>
+          ))}
         </div>
-        <div className='checkbox-container'>
-          <label>
-            <input
-              type='checkbox'
-              checked={receiveOn}
-              onChange={() => setReceiveOn((prevState) => !prevState)}
-            />
-            Receive
-          </label>
-          <label>
-            <input
-              type='checkbox'
-              checked={withdrawOn}
-              onChange={() => setWithdrawOn((prevState) => !prevState)}
-            />
-            Withdraw
-          </label>
-        </div>
-        <div className='button-container'>
-          <button
-            onClick={() => {
-              initFilter()
-              filterHandler([false, '', '', '', '', true, true, true, true])
-            }}
-          >
+        <div className='filter-button-container'>
+          <button className='button' onClick={resetHandler}>
             Reset
           </button>
         </div>
-        <div className='button-container'>
-          <button
-            onClick={() => {
-              if (
-                dateFrom ||
-                dateTo ||
-                currency1 ||
-                currency2 ||
-                !(buyOn && sellOn && receiveOn && withdrawOn)
-              ) {
-                filterHandler([
-                  true,
-                  dateFrom,
-                  dateTo,
-                  currency1,
-                  currency2,
-                  buyOn,
-                  sellOn,
-                  receiveOn,
-                  withdrawOn,
-                ])
-              }
-            }}
-          >
+        <div className='filter-button-container'>
+          <button className='button' onClick={filterHandler}>
             Filter
           </button>
         </div>

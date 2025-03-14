@@ -2,49 +2,51 @@ import { useState, useEffect, useContext } from 'react'
 import { dataActionsContext } from '../../context/dataContext'
 import { FilterOnContext } from '../../context/filterOnContext'
 import inputObject from '../../assets/inputObject'
-import useInputReducer from '../../hooks/useInputReducer'
+import useObjReducer from '../../hooks/useObjReducer'
 import InputField from '../InputField/InputField'
 import './InputBox.css'
 
 const InputBox = () => {
   const [transactionType, setTransactionType] = useState('Buy')
-  const [requiredArray, setRequiredArray] = useState(
-    initialRequiredArrayValue()
-  )
-  const { inputState, inputDispatch } = useInputReducer()
+  const [requiredObject, setRequiredObject] = useState(initialRequiredValue())
+  const { objState: inputState, objDispatch: inputDispatch } = useObjReducer({
+    amount1: '',
+    currency1: '',
+    amount2: '',
+    currency2: '',
+    datetime: '',
+  })
   const { addRow } = useContext(dataActionsContext)
   const filterOn = useContext(FilterOnContext)
-  function initialRequiredArrayValue() {
-    return new Array(5).fill(false)
-  }
-  function calculateRequiredArray() {
-    const reqArray = []
-    reqArray.push(
-      inputState.amount1 === '' || inputState.amount1 === '0' ? true : false
-    )
-    reqArray.push(inputState.currency1 === '' ? true : false)
-    if (transactionType === 'Buy' || transactionType === 'Sell') {
-      reqArray.push(
-        inputState.amount2 === '' || inputState.amount2 === '0' ? true : false
-      )
-      reqArray.push(inputState.currency2 === '' ? true : false)
-    } else {
-      reqArray.push(false)
-      reqArray.push(false)
+  function initialRequiredValue() {
+    return {
+      amount1: false,
+      currency1: false,
+      amount2: false,
+      currency2: false,
+      datetime: false,
     }
-    reqArray.push(inputState.datetime === '' ? true : false)
-    return reqArray
+  }
+  function calculateRequiredObject() {
+    let required = false
+    inputObject[transactionType].forEach((obj) => {
+      if (obj.inputKey !== undefined) {
+        if (
+          inputState[obj.inputKey] === '' ||
+          inputState[obj.inputKey] === '0'
+        ) {
+          setRequiredObject((prev) => ({ ...prev, [obj.inputKey]: true }))
+          required = true
+        } else {
+          setRequiredObject((prev) => ({ ...prev, [obj.inputKey]: false }))
+        }
+      }
+    })
+    return required
   }
   function addHandler() {
-    const reqArray = calculateRequiredArray()
-    setRequiredArray(reqArray)
-    if (
-      reqArray[0] ||
-      reqArray[1] ||
-      reqArray[2] ||
-      reqArray[3] ||
-      reqArray[4]
-    ) {
+    const reqBool = calculateRequiredObject()
+    if (reqBool) {
       return
     }
     addRow({
@@ -56,7 +58,7 @@ const InputBox = () => {
   }
   useEffect(() => {
     inputDispatch({ type: 'reset' })
-    setRequiredArray(initialRequiredArrayValue())
+    setRequiredObject(initialRequiredValue())
   }, [transactionType])
   return (
     <div className='input-box'>
@@ -81,7 +83,7 @@ const InputBox = () => {
             <InputField
               key={`input-${i}`}
               label={obj.label}
-              required={requiredArray[i]}
+              required={requiredObject[obj.inputKey]}
               inputType={obj.inputType}
               inputValue={inputState[obj.inputKey]}
               inputKey={obj.inputKey}
@@ -89,8 +91,12 @@ const InputBox = () => {
             />
           )
         )}
-        <div className='button-container'>
-          {!filterOn && <button onClick={addHandler}>{transactionType}</button>}
+        <div className='input-button-container'>
+          {!filterOn && (
+            <button className='button' onClick={addHandler}>
+              {transactionType}
+            </button>
+          )}
         </div>
       </div>
     </div>

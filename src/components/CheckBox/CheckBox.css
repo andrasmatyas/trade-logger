@@ -1,0 +1,6 @@
+.checkbox-container {
+  display: flex;
+}
+.checkbox-label {
+  width: 6.7rem;
+}

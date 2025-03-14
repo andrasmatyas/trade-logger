@@ -14,15 +14,15 @@
   background-color: hsl(143, 100%, 20%);
   color: white;
 }
-.checkbox-container {
-  display: flex;
-}
-.checkbox-container label {
-  width: 6.7rem;
-}
-.checkbox-container input {
+.checkbox-input {
   margin: 0.5rem 0.5rem 0 1rem;
   accent-color: black;
+}
+.filter-button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 5.1rem;
 }
 @media (max-width: 94.3rem) {
   .filter-box {

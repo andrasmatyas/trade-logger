@@ -1,5 +1,4 @@
 import './InputField.css'
-
 const InputField = ({
   label,
   required = false,
@@ -9,12 +8,13 @@ const InputField = ({
   inputDispatch,
 }) => {
   return (
-    <div className={`input-field  ${required ? 'input-field-danger' : ''}`}>
-      <label>
+    <div className='input-field-container'>
+      <label className='input-label'>
         {label}
-        {required && <span> *Required</span>}
+        {required && <span className='input-span-danger'> *Required</span>}
       </label>
       <input
+        className={`input-field  ${required ? 'input-field-danger' : ''}`}
         name={inputKey}
         type={inputType}
         placeholder={inputType === 'number' ? 'Enter Amount' : 'Enter Currency'}

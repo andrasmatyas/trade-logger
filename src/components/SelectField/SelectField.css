@@ -1,0 +1,14 @@
+.select-field-container {
+  display: flex;
+  flex-direction: column;
+  margin: 0.5rem 1rem;
+}
+.select-field-label {
+  padding: 0.5rem 0.5rem 0.5rem 0;
+}
+.select-field {
+  padding: 0.5rem;
+}
+.select-field:focus {
+  outline: none;
+}
