@@ -2,7 +2,8 @@
   padding-left: 2rem;
   margin-right: 1rem;
   overflow-y: scroll;
-  height: 48.2rem;
+  min-height: 42rem;
+  max-height: calc(100vh - 13rem);
 }
 table {
   border-spacing: 0;
@@ -30,6 +31,7 @@ th:last-child {
 
 @media (max-width: 105rem) {
   .table-box {
-    height: 26.3rem;
+    min-height: 20rem;
+    max-height: calc(100vh - 35rem);
   }
 }
